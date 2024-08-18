@@ -42,13 +42,13 @@ typedef struct NUMBER {
     double num;
 } NUMBER;
 
-typedef struct TYPE_T {
+typedef struct T_TYPE {
     HEADER h;
-} TYPE_T;
+} T_TYPE;
 
-typedef struct TYPE_NULL {
+typedef struct NULL_TYPE {
     HEADER h;
-} TYPE_NULL;
+} NULL_TYPE;
 
 typedef struct BUILT_IN_FUNC {
     HEADER h;
@@ -61,5 +61,8 @@ typedef struct USER_DEFINED_FUNC {
     void *func_env;
     void *var_env;
 } USER_DEFINED_FUNC;
+
+extern void *T;
+extern void *NIL;
 
 #endif
