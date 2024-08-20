@@ -14,7 +14,7 @@ typedef struct tag_NODE {
     char body[BUFFER_SIZE];
 } NODE;
 
-typedef struct tag_HEADER {
+typedef struct {
     NODE *start;
     NODE *cur;
     int index;

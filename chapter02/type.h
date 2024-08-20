@@ -7,14 +7,14 @@
 
 typedef unsigned char TYPE;
 
-const TYPE TYPE_SYMBOL = 0;
-const TYPE TYPE_CONS = 1;
-const TYPE TYPE_STRING = 2;
-const TYPE TYPE_NUMBER = 3;
-const TYPE TYPE_T = 4;
-const TYPE TYPE_NULL = 5;
-const TYPE TYPE_BUILT_IN_FUNC = 6;
-const TYPE TYPE_USER_DEFINED_FUNC = 7;
+#define TYPE_SYMBOL 0
+#define TYPE_CONS 1
+#define TYPE_STRING 2
+#define TYPE_NUMBER 3
+#define TYPE_T 4
+#define TYPE_NULL 5
+#define TYPE_BUILT_IN_FUNC 6
+#define TYPE_USER_DEFINED_FUNC 7
 
 /* オブジェクトの型を判別するためのヘッダー */
 typedef struct HEADER {
