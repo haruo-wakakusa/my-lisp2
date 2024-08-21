@@ -11,10 +11,8 @@ typedef unsigned char TYPE;
 #define TYPE_CONS 1
 #define TYPE_STRING 2
 #define TYPE_NUMBER 3
-#define TYPE_T 4
-#define TYPE_NULL 5
-#define TYPE_BUILT_IN_FUNC 6
-#define TYPE_USER_DEFINED_FUNC 7
+#define TYPE_BUILT_IN_FUNC 4
+#define TYPE_USER_DEFINED_FUNC 5
 
 /* オブジェクトの型を判別するためのヘッダー */
 typedef struct HEADER {
@@ -41,14 +39,6 @@ typedef struct NUMBER {
     HEADER h;
     double num;
 } NUMBER;
-
-typedef struct T_TYPE {
-    HEADER h;
-} T_TYPE;
-
-typedef struct NULL_TYPE {
-    HEADER h;
-} NULL_TYPE;
 
 typedef struct BUILT_IN_FUNC {
     HEADER h;

@@ -11,8 +11,6 @@ static void print_symbol(FILE *stream, void *obj);
 static void print_list(FILE *stream, void *obj);
 static void print_string(FILE *stream, void *obj);
 static void print_number(FILE *stream, void *obj);
-static void print_t(FILE *stream, void *obj);
-static void print_null(FILE *stream, void *obj);
 
 void printer_print(FILE *stream, void *obj) {
     HEADER *h;
@@ -35,11 +33,6 @@ void printer_print(FILE *stream, void *obj) {
     case TYPE_NUMBER:
         print_number(stream, obj);
         break;
-    case TYPE_T:
-        print_t(stream, obj);
-        break;
-    case TYPE_NULL:
-        print_null(stream, obj);
     default:
         fprintf(stderr, "未実装のコードに到達しました\n");
     }
@@ -139,13 +132,5 @@ static void print_string(FILE *stream, void *obj) {
 static void print_number(FILE *stream, void *obj) {
     NUMBER *number = (NUMBER *)obj;
     fprintf(stream, "%lf", number->num);
-}
-
-static void print_t(FILE *stream, void *obj) {
-    fputc('T', stream);
-}
-
-static void print_null(FILE *stream, void *obj) {
-    fputs("NIL", stream);
 }
 

@@ -4,8 +4,8 @@
 
 #include "type.h"
 
-T_TYPE T_BODY = { { TYPE_T } };
-NULL_TYPE NIL_BODY = { { TYPE_NULL } };
+char T_BODY[] = { TYPE_SYMBOL, 'T', '\0' };
+char NIL_BODY[] = { TYPE_SYMBOL, 'N', 'I', 'L', '\0' };
 
 void *T = (void *)&T_BODY;
 void *NIL = (void *)&NIL_BODY;
