@@ -47,7 +47,53 @@ void printer_print(FILE *stream, void *obj) {
 
 static void print_symbol(FILE *stream, void *obj) {
     SYMBOL *symbol = (SYMBOL *)obj;
-    fprintf(stream, "%s", get_symbol_string(symbol));
+    char *p;
+    int multiple_escape_is_needed = 0;
+    for (p = get_symbol_string(symbol); *p != '\0'; ++p) {
+        if (*p >= 'a' && *p <= 'z') {
+            multiple_escape_is_needed = 1;
+            break;
+        }
+        switch (*p) {
+        case '(':
+        case ')':
+        case '\'':
+        case ';':
+        case '\"':
+        case '`':
+        case ',':
+        case '#':
+        case '\\':
+        case '|':
+        case ' ':
+        case '\t':
+        case '\n':
+            multiple_escape_is_needed = 1;
+            goto LOOPEND1;
+        default:
+            ;
+        }
+    }
+    LOOPEND1:
+
+    if (!multiple_escape_is_needed) {
+        fprintf(stream, "%s", get_symbol_string(symbol));
+    } else {
+        fputc('|', stream);
+        for (p = get_symbol_string(symbol); *p != '\0'; ++p) {
+            switch (*p) {
+                case '\\':
+                    fputs("\\\\", stream);
+                    break;
+                case '|':
+                    fputs("\\|", stream);
+                    break;
+                default:
+                    fputc(*p, stream);
+            }
+        }
+        fputc('|', stream);
+    }
 }
 
 static void print_list(FILE *stream, void *obj) {
@@ -73,8 +119,20 @@ static void print_list(FILE *stream, void *obj) {
 
 static void print_string(FILE *stream, void *obj) {
     STRING *string = (STRING *)obj;
+    char *p;
     fputc('"', stream);
-    fprintf(stream, "%s", get_string_string(string));
+    for (p = get_string_string(string); *p != '\0'; ++p) {
+        switch (*p) {
+        case '\"':
+            fputs("\\\"", stream);
+            break;
+        case '\\':
+            fputs("\\\\", stream);
+            break;
+        default:
+            fputc(*p, stream);
+        }
+    }
     fputc('"', stream);
 }
 

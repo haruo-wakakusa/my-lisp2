@@ -123,9 +123,81 @@ LOOP1:
             } else {
                 void *expr = reader_read(stream);
                 if (!expr) return 0;
-                return cons(make_symbol("QUOTE"),
-                    cons(expr, NIL));
+                return cons(make_symbol("QUOTE"), cons(expr, NIL));
             }
+            break;
+        case '`':
+            if (buffer_get_size(buffer) != 0) {
+                void *retval = make_symbol_from_buffer(buffer);
+                buffer_clear(buffer);
+                ungetc(c, stream);
+                return retval;
+            } else {
+                void *expr = reader_read(stream);
+                if (!expr) return 0;
+                /* QUASIQUOTEはCommon LispではなくSchemeの語彙であることに注意 */
+                return cons(make_symbol("QUASIQUOTE"), cons(expr, NIL));
+            }
+            break;
+        case ',':
+            if (buffer_get_size(buffer) != 0) {
+                void *retval = make_symbol_from_buffer(buffer);
+                buffer_clear(buffer);
+                ungetc(c, stream);
+                return retval;
+            } else {
+                c = fgetc(stream);
+                if (c == EOF) {
+                    fprintf(stderr, "ファイルの終わりに到達しました\n");
+                    state = STATE_ERROR;
+                    return 0;
+                }
+                if (c != '@') {
+                    ungetc(c, stream);
+                    void *expr = reader_read(stream);
+                    if (!expr) return 0;
+                    /* UNQUOTEはSchemeの語彙であることに注意 */
+                    return cons(make_symbol("UNQUOTE"), cons(expr, NIL));
+                } else {
+                    void *expr = reader_read(stream);
+                    if (!expr) return 0;
+                    /* UNQUOTE-SPLICINGはSchemeの語彙であることに注意 */
+                    return cons(make_symbol("UNQUOTE-SPLICING"),
+                                cons(expr, NIL));
+                }
+            }
+            break;
+        case '|':
+            while (1) {
+                c = fgetc(stream);
+                if (c == EOF) {
+                    fprintf(stderr, "ファイルの終わりに到達しました\n");
+                    state = STATE_ERROR;
+                    return 0;
+                }
+                if (c == '\\') {
+                    c = fgetc(stream);
+                    if (c == EOF) {
+                        fprintf(stderr, "ファイルの終わりに到達しました\n");
+                        state = STATE_ERROR;
+                        return 0;
+                    }
+                    buffer_write_char(buffer, c);
+                } else if (c == '|') {
+                    goto LOOP1;
+                } else {
+                    buffer_write_char(buffer, c);
+                }
+            }
+            break;
+        case '\\':
+            c = fgetc(stream);
+            if (c == EOF) {
+                fprintf(stderr, "ファイルの終わりに到達しました\n");
+                state = STATE_ERROR;
+                return 0;
+            }
+            buffer_write_char(buffer, c);
             break;
         case ' ':
         case '\n':
@@ -253,9 +325,88 @@ LOOP1:
                     return 0;
                 }
                 cons_buffer_add(cbuf,
-                    cons(make_symbol("QUOTE"),
-                        cons(expr, NIL)));
+                    cons(make_symbol("QUOTE"), cons(expr, NIL)));
             }
+            break;
+        case '`':
+            if (buffer_get_size(buffer) != 0) {
+                cons_buffer_add(cbuf, make_symbol_from_buffer(buffer));
+                buffer_clear(buffer);
+            } else {
+                void *expr = reader_read(stream);
+                if (!expr) {
+                    cons_buffer_free(cbuf);
+                    return 0;
+                }
+                /* QUASIQUOTEはSchemeの語彙であることに注意 */
+                cons_buffer_add(cbuf,
+                    cons(make_symbol("QUASIQUOTE"), cons(expr, NIL)));
+            }
+            break;
+        case ',':
+            if (buffer_get_size(buffer) != 0) {
+                void *retval = make_symbol_from_buffer(buffer);
+                buffer_clear(buffer);
+                ungetc(c, stream);
+                return retval;
+            } else {
+                c = fgetc(stream);
+                if (c == EOF) {
+                    fprintf(stderr, "ファイルの終わりに到達しました\n");
+                    state = STATE_ERROR;
+                    return 0;
+                }
+                if (c != '@') {
+                    ungetc(c, stream);
+                    void *expr = reader_read(stream);
+                    if (!expr) {
+                        cons_buffer_free(cbuf);
+                        return 0;
+                    }
+                    /* UNQUOTEはSchemeの語彙であることに注意 */
+                    cons_buffer_add(cbuf,
+                        cons(make_symbol("UNQUOTE"), cons(expr, NIL)));
+                } else {
+                    void *expr = reader_read(stream);
+                    if (!expr) return 0;
+                    /* UNQUOTE-SPLICINGはSchemeの語彙であることに注意 */
+                    cons_buffer_add(cbuf,
+                        cons(make_symbol("UNQUOTE-SPLICING"),
+                            cons(expr, NIL)));
+                }
+            }
+            break;
+        case '|':
+            while (1) {
+                c = fgetc(stream);
+                if (c == EOF) {
+                    fprintf(stderr, "ファイルの終わりに到達しました\n");
+                    state = STATE_ERROR;
+                    return 0;
+                }
+                if (c == '\\') {
+                    c = fgetc(stream);
+                    if (c == EOF) {
+                        fprintf(stderr, "ファイルの終わりに到達しました\n");
+                        state = STATE_ERROR;
+                        return 0;
+                    }
+                    buffer_write_char(buffer, c);
+                } else if (c == '|') {
+                    goto LOOP1;
+                } else {
+                    buffer_write_char(buffer, c);
+                }
+            }
+            break;
+        case '\\':
+            c = fgetc(stream);
+            if (c == EOF) {
+                fprintf(stderr, "ファイルの終わりに到達しました\n");
+                state = STATE_ERROR;
+                return 0;
+            }
+            buffer_write_char(buffer, c);
             break;
         case ' ':
         case '\n':
@@ -286,6 +437,15 @@ static void *read_string(FILE *stream) {
                 buffer_clear(buffer);
                 return retval;
             }
+            break;
+        case '\\':
+            c = fgetc(stream);
+            if (c == EOF) {
+                fprintf(stderr, "ファイルの終わりに到達しました\n");
+                state = STATE_ERROR;
+                return 0;
+            }
+            buffer_write_char(buffer, c);
             break;
         default:
             buffer_write_char(buffer, c);
