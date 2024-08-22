@@ -10,7 +10,7 @@
 int main() {
     reader_initialize();
     while (1) {
-        printf("* ");
+        printf("> ");
         void *obj = reader_read(stdin);
         if (!obj) {
             if (state == STATE_EXIT) {
