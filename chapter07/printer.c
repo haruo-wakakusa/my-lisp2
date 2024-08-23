@@ -3,6 +3,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "../chapter02/type.h"
 #include "helper.h"
 #include "printer.h"
@@ -131,6 +132,29 @@ static void print_string(FILE *stream, void *obj) {
 
 static void print_number(FILE *stream, void *obj) {
     NUMBER *number = (NUMBER *)obj;
-    fprintf(stream, "%lf", number->num);
+    char *str = 0;
+    char *s;
+    int has_dot = 0;
+    asprintf(&str, "%lf", number->num);
+    for (s = str; *s != '\0'; ++s) {
+        if (*s == '.') {
+            has_dot = 1;
+            break;
+        }
+    }
+    if (!has_dot) {
+        fprintf(stream, "%s", str);
+        free(str);
+    } else {
+        while (*s != '\0') ++s;
+        for (--s; *s != '.'; --s) {
+            if (*s != '0') break;
+            *s = '\0';
+        }
+        if (*s == '.') *s = '\0';
+        fprintf(stream, "%s", str);
+        free(str);
+    }
 }
+
 

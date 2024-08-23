@@ -42,7 +42,7 @@ typedef struct NUMBER {
 
 typedef struct BUILT_IN_FUNC {
     HEADER h;
-    void *(*f)(void *, void *, void *);
+    void *(*f)(void *);
 } BUILT_IN_FUNC;
 
 typedef struct USER_DEFINED_FUNC {
