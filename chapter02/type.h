@@ -13,6 +13,7 @@ typedef unsigned char TYPE;
 #define TYPE_NUMBER 3
 #define TYPE_BUILT_IN_FUNC 4
 #define TYPE_USER_DEFINED_FUNC 5
+#define TYPE_SPECIAL_OPERATOR 6
 
 /* オブジェクトの型を判別するためのヘッダー */
 typedef struct HEADER {
@@ -51,6 +52,11 @@ typedef struct USER_DEFINED_FUNC {
     void *func_env;
     void *var_env;
 } USER_DEFINED_FUNC;
+
+typedef struct SPECIAL_OPERATOR {
+    HEADER h;
+    void *(*op)(void *, void *, void *);
+} SPECIAL_OPERATOR;
 
 extern void *T;
 extern void *NIL;
