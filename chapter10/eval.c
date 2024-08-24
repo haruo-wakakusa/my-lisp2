@@ -28,6 +28,23 @@ void eval_init() {
     register_built_in_func("*", &f_mul);
     register_built_in_func("/", &f_div);
     register_built_in_func("=", &f_number_equal);
+    register_built_in_func(">", &f_number_gt);
+    register_built_in_func(">=", &f_number_ge);
+    register_built_in_func("<", &f_number_lt);
+    register_built_in_func("<=", &f_number_le);
+    register_built_in_func("REM", &f_rem);
+    register_built_in_func("CONS", &f_cons);
+    register_built_in_func("LIST", &f_list);
+    register_built_in_func("CONSP", &f_consp);
+    register_built_in_func("CAR", &f_car);
+    register_built_in_func("CDR", &f_cdr);
+    register_built_in_func("RPLACA", &f_rplaca);
+    register_built_in_func("RPLACD", &f_rplacd);
+    register_built_in_func("SYMBOLP", &f_symbolp);
+    register_built_in_func("LISTP", &f_listp);
+    register_built_in_func("LIST-LENGTH", &f_list_length);
+    register_built_in_func("NULL", &f_null);
+    register_built_in_func("EXIT", &f_exit);
 }
 
 void *eval_top(void *obj) {
