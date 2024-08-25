@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "../chapter05/state.h"
 #include "../chapter08/reader.h"
-#include "../chapter07/printer.h"
+#include "printer.h"
 #include "../chapter09/dot.h"
 #include "eval.h"
 
@@ -32,6 +32,7 @@ int main() {
             fprintf(stderr, "ドットをシンボルとして使用することはできません\n");
             continue;
         }
+        is_printed_in_eval = 0;
         obj = eval_top(obj);
         if (!obj) {
             if (state == STATE_EXIT) {
@@ -40,11 +41,16 @@ int main() {
             } else if (state == STATE_ERROR) {
                 state = STATE_NORMAL;
                 continue;
+            } else if (state == STATE_JUMP_RETURN || state == STATE_JUMP_GO) {
+                fprintf(stderr, "ジャンプに失敗しました\n");
+                state = STATE_NORMAL;
+                continue;
             } else {
                 fprintf(stderr, "未実装のコードに到達しました\n");
                 continue;
             }
         }
+        if (is_printed_in_eval) fputc('\n', stdout);
         printer_print(stdout, obj);
         fputc('\n', stdout);
     }

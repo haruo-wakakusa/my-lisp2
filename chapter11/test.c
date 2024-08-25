@@ -22,10 +22,6 @@ int main() {
             } else if (state == STATE_ERROR) {
                 state = STATE_NORMAL;
                 continue;
-            } else if (state == STATE_JUMP) {
-                fprintf(stderr, "ジャンプに失敗しました\n");
-                state = STATE_NORMAL;
-                continue;
             } else {
                 fprintf(stderr, "未実装のコードに到達しました\n");
                 continue;
@@ -42,10 +38,6 @@ int main() {
                 reader_free();
                 return 0;
             } else if (state == STATE_ERROR) {
-                state = STATE_NORMAL;
-                continue;
-            } else if (state == STATE_JUMP) {
-                fprintf(stderr, "ジャンプに失敗しました\n");
                 state = STATE_NORMAL;
                 continue;
             } else {
