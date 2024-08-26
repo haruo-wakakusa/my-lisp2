@@ -49,8 +49,8 @@ typedef struct BUILT_IN_FUNC {
 typedef struct USER_DEFINED_FUNC {
     HEADER h;
     void *body;
-    void *func_env;
-    void *var_env;
+    void *env_func;
+    void *env_var;
 } USER_DEFINED_FUNC;
 
 typedef struct SPECIAL_OPERATOR {
