@@ -11,8 +11,8 @@
 #include "../chapter05/environment.h"
 #include "../chapter08/reader.h"
 #include "../chapter09/dot.h"
-#include "../chapter13/printer.h"
-#include "helper.h"
+#include "printer.h"
+#include "../chapter14/helper.h"
 #include "eval.h"
 #include "built_in_func.h"
 
@@ -1040,5 +1040,148 @@ void *op_labels(void *args, void *env_func, void *env_var) {
         if (!retval) return 0;
     }
     return retval;
+}
+
+void *op_function(void *args, void *env_func, void *env_var) {
+    void *arg1 = car(args);
+    if (list_length(args) != 1) {
+        fprintf(stderr, "FUNCTION: 引数の数が1つではありません\n");
+        state = STATE_ERROR;
+        return 0;
+    }
+    if (symbolp(arg1)) {
+        void *obj;
+        if (environment_get_recurse(env_func, arg1, &obj)) {
+            HEADER *h = (HEADER *)obj;
+            if (h->type == TYPE_BUILT_IN_FUNC
+                    || h->type == TYPE_USER_DEFINED_FUNC) {
+                return obj;
+            } else {
+                fprintf(stderr, "FUNCTION: %sは関数ではありません\n",
+                                get_symbol_string(arg1));
+                state = STATE_ERROR;
+                return 0;
+            }
+        } else {
+            fprintf(stderr, "FUNCTION: %sという関数は見つかりませんでした\n",
+                            get_symbol_string(arg1));
+            state = STATE_ERROR;
+            return 0;
+        }
+    }
+    if (listp(arg1)
+            && list_length(arg1) >= 2
+            && symbolp(car(arg1))
+            && strcmp("LAMBDA", get_symbol_string(car(arg1))) == 0) {
+        void *arglist = car(cdr(arg1));
+        void *p;
+        USER_DEFINED_FUNC *f;
+        if (!listp(arglist)
+                || !all_symbol_p(arglist)
+                || !unique_symbol_list_p(arglist)
+                || find_symbol("&OPTIONAL", arglist)
+                || find_symbol("&KEY", arglist)
+                || find_symbol("&AUX", arglist)
+                || find_symbol("&ALLOW-OTHER-KEYS", arglist)) {
+            fprintf(stderr, "LAMBDA: 引数リストが不正です\n");
+            state = STATE_ERROR;
+            return 0;
+        }
+        p = arglist;
+        while (p != NIL && strcmp("&REST", get_symbol_string(car(p))) != 0)
+            p = cdr(p);
+        if (p != NIL && list_length(p) != 2) {
+            fprintf(stderr, "LAMBDA: 引数リストが不正です\n");
+            state = STATE_ERROR;
+            return 0;
+        }
+        f = (USER_DEFINED_FUNC *)malloc(sizeof(USER_DEFINED_FUNC));
+        f->h.type = TYPE_USER_DEFINED_FUNC;
+        f->body = cdr(arg1);
+        f->env_func = env_func;
+        f->env_var = env_var;
+        return (void *)f;
+    }
+    fprintf(stderr, "FUNCTION: 引数が不正です\n");
+    state = STATE_ERROR;
+    return 0;
+}
+
+void *f_funcall(void *args) {
+    HEADER *h;
+    if (args == NIL) {
+        fprintf(stderr, "FUNCTION \"FUNCALL\": 引数が少なすぎます\n");
+        state = STATE_ERROR;
+        return 0;
+    }
+    h = (HEADER *)car(args);
+    if (h->type == TYPE_BUILT_IN_FUNC) {
+        BUILT_IN_FUNC *f = (BUILT_IN_FUNC *)car(args);
+        return f->f(cdr(args));
+    } else if (h->type == TYPE_USER_DEFINED_FUNC) {
+        USER_DEFINED_FUNC *f = (USER_DEFINED_FUNC *)car(args);
+        void *arglist = car(f->body);
+        int has_rest_param = find_symbol("&REST", arglist);
+        void *new_env_var;
+        void *p;
+        void *retval;
+        if (has_rest_param) {
+            if (list_length(cdr(args)) < list_length(arglist) - 2) {
+                fprintf(stderr, "FUNCTION \"FUNCALL\": 引数の数が一致しません\n");
+                state = STATE_ERROR;
+                return 0;
+            }
+        } else {
+            if (list_length(cdr(args)) != list_length(arglist)) {
+                fprintf(stderr, "FUNCTION \"FUNCALL\": 引数の数が一致しません\n");
+                state = STATE_ERROR;
+                return 0;
+            }
+        }
+        new_env_var = environment_init(f->env_var);
+        args = cdr(args);
+        if (has_rest_param) {
+            while (strcmp("&REST", get_symbol_string(car(arglist))) != 0) {
+                environment_add(new_env_var, car(arglist), car(args));
+                args = cdr(args);
+                arglist = cdr(arglist);
+            }
+            environment_add(new_env_var, car(cdr(arglist)), args);
+        } else {
+            while (arglist != NIL) {
+                environment_add(new_env_var, car(arglist), car(args));
+                args = cdr(args);
+                arglist = cdr(arglist);
+            }
+        }
+        for (p = cdr(f->body); p != NIL; p = cdr(p)) {
+            retval = eval(car(p), f->env_func, new_env_var);
+            if (!retval) return 0;
+        }
+        return retval;
+    } else {
+        fprintf(stderr, "FUNCTION \"FUNCALL\": 引数1が関数オブジェクトではありません\n");
+        state = STATE_ERROR;
+        return 0;
+    }
+}
+
+/* applyはspreadable argument list designatorに対応しない */
+void *f_apply(void *args) {
+    if (list_length(args) != 2) {
+        fprintf(stderr, "FUNCTION \"APPLY\": 引数の数が不正です\n");
+        state = STATE_ERROR;
+        return 0;
+    }
+    return f_funcall(cons(car(args), car(cdr(args))));
+}
+
+void *op_quote(void *args, void *env_func, void *env_var) {
+    if (list_length(args) != 1) {
+        fprintf(stderr, "QUOTE: 引数の数が不正です\n");
+        state = STATE_ERROR;
+        return 0;
+    }
+    return car(args);
 }
 
