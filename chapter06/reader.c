@@ -104,9 +104,11 @@ LOOP1:
                     return 0;
                 }
                 switch (c) {
+                    void *expr;
                 case '\'':
-                    return cons(make_symbol("FUNCTION"),
-                                cons(reader_read(stream), NIL));
+                    expr = reader_read(stream);
+                    if (!expr) return 0;
+                    return cons(make_symbol("FUNCTION"), cons(expr, NIL));
                 default:
                     fprintf(stderr, "未実装のマクロ文字です\n");
                     state = STATE_ERROR;
