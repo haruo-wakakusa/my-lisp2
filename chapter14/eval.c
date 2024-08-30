@@ -24,7 +24,7 @@ static void register_special_operator(char *name,
 void *env_func_global = 0;
 void *env_var_global = 0;
 
-void eval_init() {
+void eval_init(void) {
     env_func_global = environment_init(NIL);
     env_var_global = environment_init(NIL);
 
@@ -164,7 +164,7 @@ static void *eval_user_defined_func(
     CONS_BUFFER cbuf;
     void *p;
     void *new_env_var;
-    void *retval;
+    void *retval = NIL;
     if (has_rest_param) {
         if (list_length(args) < list_length(arglist) - 2) {
             fprintf(stderr, "FUNCTION \"%s\": 引数の数が一致しません\n",
@@ -183,7 +183,7 @@ static void *eval_user_defined_func(
     cbuf = cons_buffer_allocate();
     p = args;
     while (p != NIL) {
-        void *retval = eval(car(p), env_func, env_var);
+        retval = eval(car(p), env_func, env_var);
         if (!retval) {
             cons_buffer_free(cbuf);
             return 0;
@@ -208,6 +208,7 @@ static void *eval_user_defined_func(
             arglist = cdr(arglist);
         }
     }
+    retval = NIL;
     for (p = cdr(f->body); p != NIL; p = cdr(p)) {
         retval = eval(car(p), f->env_func, new_env_var);
         if (!retval) return 0;

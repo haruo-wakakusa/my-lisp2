@@ -19,7 +19,7 @@ static void register_built_in_func(char *name, void *(* func)(void *));
 void *env_func_global = 0;
 void *env_var_global = 0;
 
-void eval_init() {
+void eval_init(void) {
     env_func_global = environment_init(NIL);
     env_var_global = environment_init(NIL);
 

@@ -21,7 +21,7 @@ static void register_special_operator(char *name,
 void *env_func_global = 0;
 void *env_var_global = 0;
 
-void eval_init() {
+void eval_init(void) {
     env_func_global = environment_init(NIL);
     env_var_global = environment_init(NIL);
 

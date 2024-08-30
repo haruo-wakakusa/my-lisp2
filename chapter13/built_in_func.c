@@ -71,7 +71,7 @@ void *f_sub(void *args) {
     } else {
         NUMBER *num = (NUMBER *)car(args);
         double acc = num->num;
-        void *p = cdr(args);
+        p = cdr(args);
         while (p != NIL) {
             num = (NUMBER *)car(p);
             acc -= num->num;
@@ -150,7 +150,7 @@ void *f_div(void *args) {
     } else {
         NUMBER *num = (NUMBER *)car(args);
         double acc = num->num;
-        void *p = cdr(args);
+        p = cdr(args);
         while (p != NIL) {
             num = (NUMBER *)car(p);
             acc /= num->num;
@@ -661,7 +661,7 @@ void *op_if(void *args, void *env_func, void *env_var) {
 void *op_block(void *args, void *env_func, void *env_var) {
     void *name;
     void *body;
-    void *retval;
+    void *retval = NIL;
     if (args == NIL) {
         fprintf(stderr, "BLOCK: 引数が少なすぎます\n");
         state = STATE_ERROR;

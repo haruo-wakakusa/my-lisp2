@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "../chapter02/type.h"
 #include "../chapter09/helper.h"
 #include "printer.h"
@@ -135,6 +136,23 @@ static void print_string(FILE *stream, void *obj) {
     }
     fputc('"', stream);
 }
+
+#ifdef MSVC
+int asprintf(char **strp, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int size = _vscprintf(fmt, args) + 1; /* _vscprintf doesn't count terminating '\0' */
+	int result;
+    *strp = (char *)malloc(size);
+    if (*strp == NULL) {
+        va_end(args);
+        return -1;
+    }
+    result = vsprintf(*strp, fmt, args);
+    va_end(args);
+    return result;
+}
+#endif
 
 static void print_number(FILE *stream, void *obj) {
     NUMBER *number = (NUMBER *)obj;

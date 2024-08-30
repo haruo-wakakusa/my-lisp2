@@ -137,7 +137,7 @@ size_t list_length(void *obj) {
     while (obj != NIL) {
         if (!consp(obj)) {
             fprintf(stderr, "プロパーなリストではありません\n");
-            return -1;
+            return 0;
         }
         obj = cdr(obj);
         len++;

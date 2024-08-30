@@ -8,7 +8,7 @@
 #include "../chapter07/printer.h"
 #include "dot.h"
 
-int main() {
+int main(void) {
     reader_initialize();
     while (1) {
         printf("> ");

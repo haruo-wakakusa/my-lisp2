@@ -71,7 +71,7 @@ void *f_sub(void *args) {
     } else {
         NUMBER *num = (NUMBER *)car(args);
         double acc = num->num;
-        void *p = cdr(args);
+        p = cdr(args);
         while (p != NIL) {
             num = (NUMBER *)car(p);
             acc -= num->num;
@@ -150,7 +150,7 @@ void *f_div(void *args) {
     } else {
         NUMBER *num = (NUMBER *)car(args);
         double acc = num->num;
-        void *p = cdr(args);
+        p = cdr(args);
         while (p != NIL) {
             num = (NUMBER *)car(p);
             acc /= num->num;
@@ -661,7 +661,7 @@ void *op_if(void *args, void *env_func, void *env_var) {
 void *op_block(void *args, void *env_func, void *env_var) {
     void *name;
     void *body;
-    void *retval;
+    void *retval = NIL;
     if (args == NIL) {
         fprintf(stderr, "BLOCK: 引数が少なすぎます\n");
         state = STATE_ERROR;
@@ -898,7 +898,7 @@ void *op_defun(void *args, void *env_func, void *env_var) {
 }
 
 void *op_progn(void *args, void *env_func, void *env_var) {
-    void *retval;
+    void *retval = NIL;
     for ( ; args != NIL; args = cdr(args)) {
         retval = eval(car(args), env_func, env_var);
         if (!retval) return 0;
@@ -1154,6 +1154,7 @@ void *f_funcall(void *args) {
                 arglist = cdr(arglist);
             }
         }
+    	retval = NIL;
         for (p = cdr(f->body); p != NIL; p = cdr(p)) {
             retval = eval(car(p), f->env_func, new_env_var);
             if (!retval) return 0;

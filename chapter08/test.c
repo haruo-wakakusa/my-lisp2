@@ -7,7 +7,7 @@
 #include "../chapter06/reader.h"
 #include "../chapter07/printer.h"
 
-int main() {
+int main(void) {
     reader_initialize();
     while (1) {
         printf("> ");

@@ -9,7 +9,7 @@
 #include "../chapter09/dot.h"
 #include "eval.h"
 
-int main() {
+int main(void) {
     reader_initialize();
     eval_init();
     while (1) {
