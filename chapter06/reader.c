@@ -16,11 +16,11 @@ BUFFER buffer;
 static void *read_list(FILE *stream);
 static void *read_string(FILE *stream);
 
-void reader_initialize() {
+void reader_initialize(void) {
     buffer = buffer_allocate();
 }
 
-void reader_free() {
+void reader_free(void) {
     buffer_free(buffer);
 }
 
@@ -184,11 +184,11 @@ LOOP1:
                         state = STATE_ERROR;
                         return 0;
                     }
-                    buffer_write_char(buffer, c);
+                    buffer_write_char(buffer, (char)c);
                 } else if (c == '|') {
                     goto LOOP1;
                 } else {
-                    buffer_write_char(buffer, c);
+                    buffer_write_char(buffer, (char)c);
                 }
             }
             break;
@@ -199,7 +199,7 @@ LOOP1:
                 state = STATE_ERROR;
                 return 0;
             }
-            buffer_write_char(buffer, c);
+            buffer_write_char(buffer, (char)c);
             break;
         case ' ':
         case '\n':
@@ -212,7 +212,7 @@ LOOP1:
             }
             break;
         default:
-            buffer_write_char(buffer, toupper(c));
+            buffer_write_char(buffer, (char)toupper((char)c));
         }
     }
 }
@@ -393,11 +393,11 @@ LOOP1:
                         state = STATE_ERROR;
                         return 0;
                     }
-                    buffer_write_char(buffer, c);
+                    buffer_write_char(buffer, (char)c);
                 } else if (c == '|') {
                     goto LOOP1;
                 } else {
-                    buffer_write_char(buffer, c);
+                    buffer_write_char(buffer, (char)c);
                 }
             }
             break;
@@ -408,7 +408,7 @@ LOOP1:
                 state = STATE_ERROR;
                 return 0;
             }
-            buffer_write_char(buffer, c);
+            buffer_write_char(buffer, (char)c);
             break;
         case ' ':
         case '\n':
@@ -419,7 +419,7 @@ LOOP1:
             }
             break;
         default:
-            buffer_write_char(buffer, toupper((char)c));
+            buffer_write_char(buffer, (char)toupper((char)c));
         }
     }
 }
@@ -447,10 +447,10 @@ static void *read_string(FILE *stream) {
                 state = STATE_ERROR;
                 return 0;
             }
-            buffer_write_char(buffer, c);
+            buffer_write_char(buffer, (char)c);
             break;
         default:
-            buffer_write_char(buffer, c);
+            buffer_write_char(buffer, (char)c);
         }
     }
 }

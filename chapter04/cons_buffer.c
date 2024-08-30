@@ -12,7 +12,7 @@ typedef struct {
     CONS *last;
 } CBUF_HEADER;
 
-CONS_BUFFER cons_buffer_allocate() {
+CONS_BUFFER cons_buffer_allocate(void) {
     CBUF_HEADER *h = (CBUF_HEADER *)malloc(sizeof(CBUF_HEADER));
     h->top = NIL;
     h->last = NIL;

@@ -7,8 +7,8 @@
 
 #include <stdio.h>
 
-void reader_initialize();
-void reader_free();
+void reader_initialize(void);
+void reader_free(void);
 void *reader_read(FILE *stream);
 
 #endif

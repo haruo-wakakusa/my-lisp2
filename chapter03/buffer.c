@@ -20,7 +20,7 @@ typedef struct {
     int index;
 } HEADER;
 
-BUFFER buffer_allocate() {
+BUFFER buffer_allocate(void) {
     HEADER *h = (HEADER *)malloc(sizeof(HEADER));
     NODE *n = (NODE *)malloc(sizeof(NODE));
     h->start = n;

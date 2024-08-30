@@ -7,7 +7,7 @@
 
 typedef void * CONS_BUFFER;
 
-CONS_BUFFER cons_buffer_allocate();
+CONS_BUFFER cons_buffer_allocate(void);
 void cons_buffer_add(CONS_BUFFER buf, void *obj);
 void *cons_buffer_get_list(CONS_BUFFER buf);
 void cons_buffer_free(CONS_BUFFER buf);
