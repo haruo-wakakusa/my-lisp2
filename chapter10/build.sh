@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "$(uname)" != 'Darwin']; then
+if [ "$(uname)" != 'Darwin' ]; then
     $lm = "-lm"
 fi
 
