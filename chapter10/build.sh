@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ "$(uname)" != 'Darwin' ]; then
-    $lm="-lm"
+    lm="-lm"
 fi
 
 clang ../chapter02/type.c \
