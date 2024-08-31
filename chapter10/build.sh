@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "$(uname)" != 'Darwin']; then
+    $lm = "-lm"
+fi
+
 clang ../chapter02/type.c \
     ../chapter03/buffer.c \
     ../chapter04/cons_buffer.c \
@@ -13,5 +17,5 @@ clang ../chapter02/type.c \
     eval.c \
     helper.c \
     test.c \
-    -std=c11 -Wall -o test -g3
+    -std=c11 -Wall $lm -o test -g3
 
