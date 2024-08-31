@@ -2,6 +2,10 @@
  * printer.c
  */
 
+#ifndef MSVC
+#define _GNU_SOURCE
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
