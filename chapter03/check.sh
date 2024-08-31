@@ -1,5 +1,5 @@
 #!/bin/sh
 
-gcc -c buffer.c -std=c89 -Wall
+clang -c buffer.c -std=c11 -Wall
 rm buffer.o
 

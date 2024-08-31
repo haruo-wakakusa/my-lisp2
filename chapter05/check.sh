@@ -1,5 +1,5 @@
 #!/bin/sh
 
-gcc -c environment.c helper.c state.c -std=c89 -Wall
+clang -c environment.c helper.c state.c -std=c11 -Wall
 rm environment.o helper.o state.o
 

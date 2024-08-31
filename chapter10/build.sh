@@ -13,5 +13,5 @@ clang ../chapter02/type.c \
     eval.c \
     helper.c \
     test.c \
-    -std=c89 -Wall -o test -g3
+    -std=c11 -Wall -o test -g3
 
