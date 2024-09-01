@@ -17,10 +17,7 @@ void * cons(void *car1, void *cdr1) {
 }
 
 char * get_symbol_string(SYMBOL *symbol) {
-    char *s;
-
-    s = (char *)symbol;
-    return s + sizeof(SYMBOL);
+    return symbol->str;
 }
 
 int consp(void *obj) {

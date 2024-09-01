@@ -18,10 +18,7 @@ void * cons(void *car1, void *cdr1) {
 }
 
 char * get_symbol_string(SYMBOL *symbol) {
-    char *s;
-
-    s = (char *)symbol;
-    return s + sizeof(SYMBOL);
+    return symbol->str;
 }
 
 int consp(void *obj) {
@@ -71,14 +68,12 @@ void *rplacd(void *cons1, void *obj) {
 SYMBOL * make_symbol_from_buffer(BUFFER buf) {
     size_t len;
     SYMBOL *symbol;
-    char *s;
 
     len = buffer_get_size(buf) + 1;
     symbol = malloc(sizeof(SYMBOL) + len);
     symbol->h.type = TYPE_SYMBOL;
-    s = (char *)symbol;
-    buffer_copy(buf, s + sizeof(SYMBOL));
-    s[sizeof(SYMBOL) + len - 1] = '\0';
+    buffer_copy(buf, symbol->str);
+    symbol->str[len - 1] = '\0';
 
     return symbol;
 }
@@ -86,14 +81,12 @@ SYMBOL * make_symbol_from_buffer(BUFFER buf) {
 STRING * make_string_from_buffer(BUFFER buf) {
     size_t len;
     STRING *string;
-    char *s;
 
     len = buffer_get_size(buf) + 1;
     string = malloc(sizeof(STRING) + len);
     string->h.type = TYPE_STRING;
-    s = (char *)string;
-    buffer_copy(buf, s + sizeof(STRING));
-    s[sizeof(STRING) + len - 1] = '\0';
+    buffer_copy(buf, string->str);
+    string->str[len - 1] = '\0';
 
     return string;
 }
@@ -101,13 +94,11 @@ STRING * make_string_from_buffer(BUFFER buf) {
 SYMBOL * make_symbol(char *str1) {
     size_t len;
     SYMBOL *symbol;
-    char *s;
 
     len = strlen(str1) + 1;
     symbol = malloc(sizeof(SYMBOL) + len);
     symbol->h.type = TYPE_SYMBOL;
-    s = (char *)symbol;
-    strcpy(s + sizeof(SYMBOL), str1);
+    strcpy(symbol->str, str1);
 
     return symbol;
 }

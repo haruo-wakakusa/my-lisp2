@@ -20,14 +20,14 @@ typedef struct HEADER {
     TYPE type;
 } HEADER;
 
-/* シンボル型。シンボル型は可変長のゼロ終端文字列データが直後に付随する */
 typedef struct SYMBOL {
     HEADER h;
+    char str[];
 } SYMBOL;
 
-/* 文字列型。文字列型は可変長のゼロ終端文字列データが直後に付随する */
 typedef struct STRING {
     HEADER h;
+    char str[];
 } STRING;
 
 typedef struct CONS {
