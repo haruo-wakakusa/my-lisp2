@@ -449,11 +449,12 @@ void *f_list_length(void *args) {
         state = STATE_ERROR;
         return 0;
     }
-    len = list_length(car(args));
-    if (len == -1) {
+    if (!listp(car(args))) {
+        fprintf(stderr, "FUNCTION \"LIST-LENGTH\": プロパーなリストではありません\n");
         state = STATE_ERROR;
         return 0;
     }
+    len = list_length(car(args));
     num = (NUMBER *)malloc(sizeof(NUMBER));
     num->h.type = TYPE_NUMBER;
     num->num = (double)len;
