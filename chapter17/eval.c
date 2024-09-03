@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../chapter02/type.h"
+#include "type.h"
 #include "../chapter04/cons_buffer.h"
 #include "../chapter14/helper.h"
 #include "../chapter05/environment.h"
@@ -20,6 +20,8 @@ static void *eval_user_defined_func(
 static void register_built_in_func(char *name, void *(* func)(void *));
 static void register_special_operator(char *name,
                                       void *(* op)(void *, void *, void *));
+static void *expand_macro(
+        void *name, void *macro, void *args, void *env_func, void *env_var);
 
 void *env_func_global = 0;
 void *env_var_global = 0;
@@ -133,6 +135,9 @@ static void *eval_list(void *obj, void *env_func, void *env_var) {
         } else if (h->type == TYPE_SPECIAL_OPERATOR) {
             SPECIAL_OPERATOR *op = (SPECIAL_OPERATOR *)obj2;
             return op->op(cdr(obj), env_func, env_var);
+        } else if (h->type == TYPE_MACRO) {
+            return expand_macro(
+                symbol, obj2, cdr(obj), env_func, env_var);
         } else {
             fprintf(stderr, "未実装のコードに到達しました\n");
             state = STATE_ERROR;
@@ -220,6 +225,52 @@ static void *eval_user_defined_func(
         if (!retval) return 0;
     }
     return retval;
+}
+
+static void *expand_macro(
+        void *name, void *macro, void *args, void *env_func, void *env_var) {
+    MACRO *m = (MACRO *)macro;
+    void *arglist = car(m->body);
+    int has_rest_param = find_symbol("&REST", arglist);
+    void *p;
+    void *new_env_var;
+    void *retval;
+    if (has_rest_param) {
+        if (list_length(args) < list_length(arglist) - 2) {
+            fprintf(stderr, "MACRO \"%s\": 引数の数が一致しません\n",
+                            get_symbol_string(name));
+            state = STATE_ERROR;
+            return 0;
+        }
+    } else {
+        if (list_length(args) != list_length(arglist)) {
+            fprintf(stderr, "MACRO \"%s\": 引数の数が一致しません\n",
+                            get_symbol_string(name));
+            state = STATE_ERROR;
+            return 0;
+        }
+    }
+    new_env_var = environment_init(m->env_var);
+    if (has_rest_param) {
+        while (strcmp("&REST", get_symbol_string(car(arglist))) != 0) {
+            environment_add(new_env_var, car(arglist), car(args));
+            args = cdr(args);
+            arglist = cdr(arglist);
+        }
+        environment_add(new_env_var, car(cdr(arglist)), args);
+    } else {
+        while (arglist != NIL) {
+            environment_add(new_env_var, car(arglist), car(args));
+            args = cdr(args);
+            arglist = cdr(arglist);
+        }
+    }
+    retval = NIL;
+    for (p = cdr(m->body); p != NIL; p = cdr(p)) {
+        retval = eval(car(p), m->env_func, new_env_var);
+        if (!retval) return 0;
+    }
+    return eval(retval, env_func, env_var);
 }
 
 static void register_built_in_func(char *name, void *(* func)(void *)) {

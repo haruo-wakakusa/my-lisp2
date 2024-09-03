@@ -14,7 +14,6 @@ clang type.c \
     ../chapter09/dot.c \
     ../chapter14/helper.c \
     ../chapter16/printer.c \
-    expand.c \
     built_in_func.c \
     eval.c \
     test.c \

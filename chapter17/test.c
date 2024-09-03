@@ -7,7 +7,6 @@
 #include "../chapter08/reader.h"
 #include "../chapter13/printer.h"
 #include "../chapter09/dot.h"
-#include "expand.h"
 #include "eval.h"
 
 int main(void) {
@@ -33,18 +32,6 @@ int main(void) {
             fprintf(stderr, "ドットをシンボルとして使用することはできません\n");
             continue;
         }
-        obj = expand_all(obj);
-        if (!obj) {
-            if (state == STATE_ERROR) {
-                state = STATE_NORMAL;
-                continue;
-            } else {
-                fprintf(stderr, "未実装のコードに到達しました\n");
-                continue;
-            }
-        }
-        printer_print(stdout, obj); // デバッグ
-        fputc('\n', stdout); // デバッグ
         is_printed_in_eval = 0;
         obj = eval_top(obj);
         if (!obj) {
