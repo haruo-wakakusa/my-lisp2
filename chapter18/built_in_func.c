@@ -503,7 +503,7 @@ void *op_defvar(void *args, void *env_func, void *env_var) {
 }
 
 void *op_setq(void *args, void *env_func, void *env_var) {
-    void *val;
+    void *val = NIL;
     if (list_length(args) % 2 != 0) {
         fprintf(stderr, "SETQ: 引数の数が不正です\n");
         state = STATE_ERROR;
@@ -1255,7 +1255,7 @@ void *op_defmacro(void *args, void *env_func, void *env_var) {
 }
 
 void *op_psetq(void *args, void *env_func, void *env_var) {
-    void *val;
+    void *val = NIL;
     void *p;
     CONS_BUFFER cbuf;
     void *val_list;
